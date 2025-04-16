@@ -34,6 +34,21 @@ jobs:
           push: true
           tags: index.docker.io/${{ secrets.DOCKER_USERNAME }}/ctse-assignment:${{ github.sha }}
           file: ./Dockerfile
+          
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Run Snyk to check for vulnerabilities
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test
+        
+      - name: Monitor project in Snyk dashboard
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk monitor
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,7 +62,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'ctse-assignment-1'
+          app-name: 'ctse-assignment'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
           images: 'index.docker.io/${{ secrets.DOCKER_USERNAME }}/ctse-assignment:${{ github.sha }}'

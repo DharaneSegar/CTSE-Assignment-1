@@ -14,7 +14,9 @@ app.use(
   })
 );
 
-
+app.use("/", (req, res) => {
+   res.json({ msg: "Hey, CTSE Deployment is working!" });
+ });
 app.use("/users", require("./routes/userRoutes"));
 
 app.listen(port, () => {
